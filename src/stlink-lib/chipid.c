@@ -656,6 +656,18 @@ static const struct stlink_chipid_params devices[] = {
         .flags = CHIP_F_HAS_SWO_TRACING,
     },
     {
+        // STM32WLx5 (from RM0453)
+        .chip_id = STLINK_CHIPID_STM32_WLX5,
+        .description = "WLx5",
+        .flash_type = STLINK_FLASH_TYPE_WB, //The flash type is identical to the WB
+        .flash_size_reg = 0x1FFF75E0, //39.1.2
+        .flash_pagesize = 0x800,      // 2k - 3.2
+        .sram_size = 0x10000,         // upto 64k - 2.1
+        .bootrom_base = 0x1fff0000,   // see the memory map
+        .bootrom_size = 0x7000,       // 28k
+        .flags = CHIP_F_HAS_SWO_TRACING,
+    },
+    {
         // STM32H742/743/753 (from RM0433)
         .chip_id = STLINK_CHIPID_STM32_H74XXX,
         .description = "H74x/H75x",
