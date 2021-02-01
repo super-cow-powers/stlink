@@ -1228,14 +1228,17 @@ int stlink_chip_id(stlink_t *sl, uint32_t *chip_id) {
     if (ret == -1) {
         return(ret);
     }
+    
     if (*chip_id == 0) {
         // STM32H7 chipid in 0x5c001000 (RM0433 pg3189)
         ret = stlink_read_debug32(sl, 0x5c001000, chip_id);
     }
+    
     if (*chip_id == 0) {
         // Try Corex M0 DBGMCU_IDCODE register address
         ret = stlink_read_debug32(sl, 0x40015800, chip_id);
     }
+    
     return(ret);
 }
 
@@ -1277,7 +1280,6 @@ int stlink_load_device_params(stlink_t *sl) {
     uint32_t flash_size;
 
     stlink_chip_id(sl, &chip_id);
-    printf("chip_id %x\n",chip_id);
     sl->chip_id = chip_id & 0xfff;
 
     // Fix chip_id for F4 rev A errata , Read CPU ID, as CoreID is the same for F2/F4
