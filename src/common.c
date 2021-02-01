@@ -1221,28 +1221,21 @@ int stlink_core_id(stlink_t *sl) {
 int stlink_chip_id(stlink_t *sl, uint32_t *chip_id) {
     int ret;
 
-    if (sl->core_id == STM32H7_CORE_ID) {
-        // STM32H7 chipid in 0x5c001000 (RM0433 pg3189)
-        ret = stlink_read_debug32(sl, 0x5c001000, chip_id);
-    } else {
-        // default chipid address
-        ret = stlink_read_debug32(sl, 0xE0042000, chip_id);
-    }
-
+    
+    /* default chipid address. Testing for H7 here breaks WL55, as coreid is the same */
+    ret = stlink_read_debug32(sl, 0xE0042000, chip_id);
+        
     if (ret == -1) {
         return(ret);
     }
-
     if (*chip_id == 0) {
         // STM32H7 chipid in 0x5c001000 (RM0433 pg3189)
         ret = stlink_read_debug32(sl, 0x5c001000, chip_id);
     }
-
     if (*chip_id == 0) {
         // Try Corex M0 DBGMCU_IDCODE register address
         ret = stlink_read_debug32(sl, 0x40015800, chip_id);
     }
-
     return(ret);
 }
 
@@ -1284,6 +1277,7 @@ int stlink_load_device_params(stlink_t *sl) {
     uint32_t flash_size;
 
     stlink_chip_id(sl, &chip_id);
+    printf("chip_id %x\n",chip_id);
     sl->chip_id = chip_id & 0xfff;
 
     // Fix chip_id for F4 rev A errata , Read CPU ID, as CoreID is the same for F2/F4
@@ -1295,14 +1289,14 @@ int stlink_load_device_params(stlink_t *sl) {
             sl->chip_id = 0x413;
         }
     }
-
+    
     params = stlink_chipid_get_params(sl->chip_id);
-
+    
     if (params == NULL) {
         WLOG("unknown chip id! %#x\n", chip_id);
         return(-1);
     }
-
+   
     if (params->flash_type == STLINK_FLASH_TYPE_UNKNOWN) {
         WLOG("Invalid flash type, please check device declaration\n");
         sl->flash_size = 0;
