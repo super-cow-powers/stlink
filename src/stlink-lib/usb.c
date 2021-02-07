@@ -376,6 +376,7 @@ int _stlink_usb_core_id(stlink_t * sl) {
     }
 
     sl->core_id = read_uint32(data, offset);
+    
     return(0);
 }
 
